@@ -120,7 +120,7 @@ export function WalletConnectFooter() {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border/30">
-          <p className="text-sm text-muted-foreground">Copyright 2024 Dev Tools</p>
+          <p className="text-sm text-muted-foreground">Copyright 2025 Vivor Dev</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
